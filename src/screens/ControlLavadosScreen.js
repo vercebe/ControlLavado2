@@ -5,8 +5,10 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Text,
+  Dimensions,
   Modal,
   TouchableOpacity,
+  StyleSheet,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -21,6 +23,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { globalStyles } from "../utils/globalStyles";
 import { AuthContext } from "../context/AuthContext";
 
+// Obtener dimensiones de la pantalla
+const { width: screenWidth } = Dimensions.get("window");
+
 // Componente para menú personalizado
 const CustomMenu = ({ visible, closeMenu, handleCloseApp }) => {
   return (
@@ -31,13 +36,10 @@ const CustomMenu = ({ visible, closeMenu, handleCloseApp }) => {
       onRequestClose={closeMenu}
     >
       <TouchableWithoutFeedback onPress={closeMenu}>
-        <View style={globalStyles.menuOverlay}>
-          <View style={globalStyles.menu}>
-            <TouchableOpacity
-              onPress={handleCloseApp}
-              style={globalStyles.menuItem}
-            >
-              <Text style={globalStyles.menuText}>Cerrar</Text>
+        <View style={styles.menuOverlay}>
+          <View style={styles.menu}>
+            <TouchableOpacity onPress={handleCloseApp} style={styles.menuItem}>
+              <Text style={styles.menuText}>Cerrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -76,18 +78,18 @@ const MasRoute = ({ showForm, setShowForm }) => {
   };
 
   return (
-    <View style={globalStyles.plusContainer}>
+    <View style={styles.plusContainer}>
       {!showForm && (
         <Icon
           name="plus"
           size={100}
           color="white"
           onPress={handleComenzar}
-          style={globalStyles.plusIcon}
+          style={styles.plusIcon}
         />
       )}
       {showForm && (
-        <View style={globalStyles.formContainer}>
+        <View style={styles.formContainer}>
           <TextInput
             mode="outlined"
             label="Placa"
@@ -102,6 +104,7 @@ const MasRoute = ({ showForm, setShowForm }) => {
               },
             }}
           />
+          {/* Aquí puedes agregar más campos de formulario */}
         </View>
       )}
     </View>
@@ -110,23 +113,23 @@ const MasRoute = ({ showForm, setShowForm }) => {
 
 // Otras rutas
 const PendientesRoute = () => (
-  <View style={globalStyles.centered}>
+  <View style={styles.centered}>
     <Icon name="clipboard-list" size={100} color="white" />
-    <Text style={globalStyles.text}>Pendientes</Text>
+    <Text style={styles.text}>Pendientes</Text>
   </View>
 );
 
 const MiDiaRoute = () => (
-  <View style={globalStyles.centered}>
+  <View style={styles.centered}>
     <Icon name="calendar-today" size={100} color="white" />
-    <Text style={globalStyles.text}>Mi Día</Text>
+    <Text style={styles.text}>Mi Día</Text>
   </View>
 );
 
 const MiSemanaRoute = () => (
-  <View style={globalStyles.centered}>
+  <View style={styles.centered}>
     <Icon name="calendar-week" size={100} color="white" />
-    <Text style={globalStyles.text}>Mi Semana</Text>
+    <Text style={styles.text}>Mi Semana</Text>
   </View>
 );
 
@@ -200,5 +203,60 @@ const ControlLavadoScreen = () => {
     </PaperProvider>
   );
 };
+
+// Estilos actualizados
+const styles = StyleSheet.create({
+  plusContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1a1a1a",
+  },
+  plusIcon: {
+    alignSelf: "center", // Para asegurar que esté centrado
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1a1a1a",
+  },
+  formContainer: {
+    marginTop: 20,
+    width: "80%",
+  },
+  text: {
+    fontSize: 24,
+    color: "white",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  menuOverlay: {
+    flex: 1,
+    justifyContent: "flex-start",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  menu: {
+    backgroundColor: "#fff",
+    padding: 10,
+    width: screenWidth * 0.2,
+    alignItems: "center",
+    marginTop: 80,
+    marginRight: 10,
+    alignSelf: "flex-end",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  menuItem: {
+    paddingVertical: 10,
+  },
+  menuText: {
+    fontSize: 16,
+    color: "#333",
+  },
+});
 
 export default ControlLavadoScreen;

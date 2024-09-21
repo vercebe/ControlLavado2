@@ -28,25 +28,10 @@ const HomeScreen = ({ navigation, setUserConfirmed }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingToken, setCheckingToken] = useState(true);
-  const { login, logout } = useContext(AuthContext);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { login, logout, currentUser } = useContext(AuthContext);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const checkCurrentUser = async () => {
-      try {
-        const storedUsername = await SecureStore.getItemAsync("username");
-        if (storedUsername) {
-          setCurrentUser(storedUsername);
-        }
-      } catch (error) {
-        console.log("Error al verificar el usuario actual:", error);
-      } finally {
-        setCheckingToken(false);
-      }
-    };
-    checkCurrentUser();
-
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -84,7 +69,6 @@ const HomeScreen = ({ navigation, setUserConfirmed }) => {
 
   const handleLogout = async () => {
     await logout();
-    setCurrentUser(null);
     setUsername("");
     setPassword("");
   };
@@ -93,15 +77,6 @@ const HomeScreen = ({ navigation, setUserConfirmed }) => {
     setUserConfirmed(true); // Confirmar sesión
   };
 
-  // Mientras se verifica el token, mostramos un spinner (ActivityIndicator)
-  if (checkingToken) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    );
-  }
-
   if (currentUser) {
     return (
       <KeyboardAvoidingView
@@ -109,50 +84,44 @@ const HomeScreen = ({ navigation, setUserConfirmed }) => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <PaperProvider theme={darkTheme}>
-            <View style={globalStyles.container}>
-              <View style={globalStyles.content}>
-                <Headline style={globalStyles.title}>
-                  Sesión ya iniciada
-                </Headline>
+          <View style={{ flex: 1 }}>
+            <PaperProvider theme={darkTheme}>
+              <View style={globalStyles.container}>
+                <View style={globalStyles.content}>
+                  <Headline style={globalStyles.title}>
+                    Sesión ya iniciada
+                  </Headline>
 
-                <Text style={globalStyles.date}>{formattedDate}</Text>
-                <Text style={globalStyles.time}>{formattedTime}</Text>
+                  <Text style={globalStyles.date}>{formattedDate}</Text>
+                  <Text style={globalStyles.time}>{formattedTime}</Text>
 
-                <Text style={globalStyles.smallText}>
-                  El usuario actual es: {currentUser}
-                </Text>
+                  <Text style={globalStyles.smallText1}>
+                    El usuario actual es: {currentUser}
+                  </Text>
 
-                <View style={globalStyles.buttonWrapper}>
-                  <Button
-                    mode="contained"
-                    onPress={handleConfirmContinue}
-                    style={globalStyles.button}
-                    labelStyle={globalStyles.buttonText}
-                  >
-                    Continuar como {currentUser}
-                  </Button>
+                  <View style={globalStyles.buttonWrapper}>
+                    <Button
+                      mode="contained"
+                      onPress={handleConfirmContinue}
+                      style={globalStyles.button1}
+                      labelStyle={globalStyles.buttonText}
+                    >
+                      Continuar como {currentUser}
+                    </Button>
 
-                  <Button
-                    mode="contained"
-                    onPress={handleLogout}
-                    style={globalStyles.button}
-                    labelStyle={globalStyles.buttonText}
-                  >
-                    Ingresar con otro usuario
-                  </Button>
+                    <Button
+                      mode="contained"
+                      onPress={handleLogout}
+                      style={globalStyles.button1}
+                      labelStyle={globalStyles.buttonText}
+                    >
+                      Ingresar con otro usuario
+                    </Button>
+                  </View>
                 </View>
               </View>
-
-              <View style={globalStyles.footer}>
-                <Text style={globalStyles.footerText}>Designed by:</Text>
-                <Text style={globalStyles.footerTextBold}>
-                  CMG TECHNOLOGIES
-                </Text>
-                <Text style={globalStyles.footerText}>Version 1.0</Text>
-              </View>
-            </View>
-          </PaperProvider>
+            </PaperProvider>
+          </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     );
@@ -164,97 +133,95 @@ const HomeScreen = ({ navigation, setUserConfirmed }) => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PaperProvider theme={darkTheme}>
-          <View style={globalStyles.container}>
-            <View style={globalStyles.content}>
-              <Headline style={globalStyles.title}>Control Autolavado</Headline>
+        <View style={{ flex: 1 }}>
+          <PaperProvider theme={darkTheme}>
+            <View style={globalStyles.container}>
+              <View style={globalStyles.content}>
+                <Headline style={globalStyles.title}>
+                  Control Autolavado
+                </Headline>
 
-              <Text style={globalStyles.date}>{formattedDate}</Text>
-              <Text style={globalStyles.time}>{formattedTime}</Text>
+                <Text style={globalStyles.date}>{formattedDate}</Text>
+                <Text style={globalStyles.time}>{formattedTime}</Text>
 
-              <View style={globalStyles.inputContainer}>
-                <TextInput
-                  mode="outlined"
-                  label="Usuario"
-                  value={username}
-                  onChangeText={setUsername}
-                  style={globalStyles.input}
-                  theme={{
-                    colors: { placeholder: "#ff0000", primary: "#ffffff" },
-                  }}
-                />
-                <IconButton
-                  icon="broom"
-                  size={20}
-                  color="#999"
-                  onPress={() => setUsername("")}
-                  style={globalStyles.clearButton}
-                />
-              </View>
+                <View style={globalStyles.inputContainer}>
+                  <TextInput
+                    mode="outlined"
+                    label="Usuario"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={globalStyles.input}
+                    theme={{
+                      colors: { placeholder: "#ff0000", primary: "#ffffff" },
+                    }}
+                  />
+                  <IconButton
+                    icon="broom"
+                    size={20}
+                    color="#999"
+                    onPress={() => setUsername("")}
+                    style={globalStyles.clearButton}
+                  />
+                </View>
 
-              <View style={globalStyles.inputContainer}>
-                <TextInput
-                  mode="outlined"
-                  label="Clave"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  right={
-                    <TextInput.Icon
-                      icon={showPassword ? "eye" : "eye-off"}
-                      color="#ffffff"
-                      onPress={() => setShowPassword(!showPassword)}
-                    />
-                  }
-                  style={globalStyles.input}
-                  theme={{
-                    colors: { placeholder: "#ff0000", primary: "#ffffff" },
-                  }}
-                />
-                <IconButton
-                  icon="broom"
-                  size={20}
-                  color="#999"
-                  onPress={() => setPassword("")}
-                  style={globalStyles.clearButton}
-                />
-              </View>
+                <View style={globalStyles.inputContainer}>
+                  <TextInput
+                    mode="outlined"
+                    label="Clave"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    right={
+                      <TextInput.Icon
+                        icon={showPassword ? "eye" : "eye-off"}
+                        color="#ffffff"
+                        onPress={() => setShowPassword(!showPassword)}
+                      />
+                    }
+                    style={globalStyles.input}
+                    theme={{
+                      colors: { placeholder: "#ff0000", primary: "#ffffff" },
+                    }}
+                  />
+                  <IconButton
+                    icon="broom"
+                    size={20}
+                    color="#999"
+                    onPress={() => setPassword("")}
+                    style={globalStyles.clearButton}
+                  />
+                </View>
 
-              <View style={globalStyles.buttonWrapper}>
-                {loading ? (
-                  <ActivityIndicator size="large" color="#fff" />
-                ) : (
-                  <Button
-                    mode="contained"
-                    onPress={handleLogin}
-                    style={globalStyles.button}
-                    labelStyle={globalStyles.buttonText}
+                <View style={globalStyles.buttonWrapper}>
+                  {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                  ) : (
+                    <Button
+                      mode="contained"
+                      onPress={handleLogin}
+                      style={globalStyles.button}
+                      labelStyle={globalStyles.buttonText}
+                    >
+                      Autenticar
+                    </Button>
+                  )}
+                </View>
+
+                <View style={globalStyles.registerContainer}>
+                  <Text style={globalStyles.smallText}>
+                    ¿No tienes una cuenta?
+                  </Text>
+                  <Text
+                    style={globalStyles.registerText}
+                    onPress={() => navigation.navigate("Register")}
                   >
-                    Autenticar
-                  </Button>
-                )}
-              </View>
-
-              <View style={globalStyles.registerContainer}>
-                <Text style={globalStyles.smallText}>
-                  ¿No tienes una cuenta?
-                </Text>
-                <Text
-                  style={globalStyles.registerText}
-                  onPress={() => navigation.navigate("Register")}
-                >
-                  Regístrate aquí
-                </Text>
+                    Regístrate aquí
+                  </Text>
+                </View>
               </View>
             </View>
-
-            <View style={globalStyles.footer}>
-              <Text style={globalStyles.footerText}>Designed by:</Text>
-              <Text style={globalStyles.footerTextBold}>CMG TECHNOLOGIES</Text>
-              <Text style={globalStyles.footerText}>Version 1.0</Text>
-            </View>
-          </View>
-        </PaperProvider>
+          </PaperProvider>
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
