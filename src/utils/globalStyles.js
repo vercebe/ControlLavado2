@@ -18,8 +18,7 @@ export const globalStyles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    marginTop: 40,
-    marginBottom: 30,
+    marginBottom: 10,
     textAlign: "center",
     color: "#fff",
   },
@@ -31,7 +30,7 @@ export const globalStyles = StyleSheet.create({
   },
   time: {
     fontSize: 18,
-    marginBottom: 110,
+    marginBottom: 20,
     textAlign: "center",
     color: "#fff",
   },
@@ -64,12 +63,6 @@ export const globalStyles = StyleSheet.create({
     borderColor: "#ffffff",
     borderWidth: 1,
   },
-  button1: {
-    backgroundColor: "#555",
-    borderColor: "#ffffff",
-    borderWidth: 1,
-    marginTop: 20,
-  },
   buttonText: {
     color: "#fff",
   },
@@ -99,7 +92,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 14,
   },
   footerTextBold: {
-    color: "#ff0000",
+    color: "#888",
     fontSize: 16,
     fontWeight: "bold",
   },
