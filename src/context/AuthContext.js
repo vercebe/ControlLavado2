@@ -5,14 +5,18 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState(null); // Estado para almacenar el nombre de usuario
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await SecureStore.getItemAsync("authToken");
-      if (token) {
+      const storedUsername = await SecureStore.getItemAsync("username");
+      if (token && storedUsername) {
         setIsAuthenticated(true);
+        setUsername(storedUsername); // Establecer el username desde el almacenamiento seguro
       } else {
-        setIsAuthenticated(false); // Asegúrate de que el estado sea "false" si no hay token
+        setIsAuthenticated(false);
+        setUsername(null); // Limpiar el username si no hay token
       }
     };
     checkAuth();
@@ -22,16 +26,18 @@ export const AuthProvider = ({ children }) => {
     await SecureStore.setItemAsync("authToken", token);
     await SecureStore.setItemAsync("username", username);
     setIsAuthenticated(true);
+    setUsername(username); // Establecer el username después del login
   };
 
   const logout = async () => {
     await SecureStore.deleteItemAsync("authToken");
     await SecureStore.deleteItemAsync("username");
     setIsAuthenticated(false);
+    setUsername(null); // Limpiar el username después del logout
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, username, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
