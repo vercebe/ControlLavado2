@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto"; // Importamos expo-crypto
-import { AuthProvider } from "./src/context/AuthContext";
+import { AppContextProvider } from "./src/context/AppContext"; // Importa el contexto para lavado
+import { AuthProvider } from "./src/context/AuthContext"; // Importa el contexto de autenticación
 import AppNavigator from "./src/navigation/AppNavigator";
 import { View, ActivityIndicator } from "react-native";
 
@@ -17,7 +18,7 @@ const App = () => {
           // Genera una clave secreta segura utilizando expo-crypto
           const randomBytes = await Crypto.getRandomBytesAsync(16); // 16 bytes (128 bits)
 
-          // Convierte los bytes en una cadena hexadecimal manualmente
+          // Convierte los bytes en una cadena hexadecimal
           const newSecretKey = Array.from(randomBytes)
             .map((b) => b.toString(16).padStart(2, "0"))
             .join("");
@@ -47,9 +48,11 @@ const App = () => {
   }
 
   return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
+    <AppContextProvider>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </AppContextProvider>
   );
 };
 

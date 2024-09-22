@@ -5,7 +5,7 @@ const { width: screenWidth } = Dimensions.get("window");
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between", // Para que el footer quede en la parte inferior
+    justifyContent: "flex-start", // Para que el contenido se alinee en la parte superior
     alignItems: "center",
     backgroundColor: "#222",
     padding: 20,
@@ -43,10 +43,25 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 5,
   },
   input: {
-    flex: 1,
+    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
     backgroundColor: "transparent",
     color: "#fff",
     paddingHorizontal: 10,
+    marginBottom: 10, // Espacio entre los inputs
+  },
+  input1: {
+    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
+    backgroundColor: "transparent",
+    color: "#fff",
+    paddingHorizontal: 10,
+    marginBottom: 10, // Espacio entre los inputs
+  },
+  inputmodelo: {
+    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
+    backgroundColor: "transparent",
+    color: "#fff",
+    paddingHorizontal: 10,
+    marginBottom: 15, // Espacio entre los inputs
   },
   clearButton: {
     padding: 10,
@@ -68,7 +83,7 @@ export const globalStyles = StyleSheet.create({
   },
   registerContainer: {
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 10,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -92,7 +107,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 14,
   },
   footerTextBold: {
-    color: "#888",
+    color: "#ff0000",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -127,8 +142,12 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: "#1a1a1a",
   },
   formContainer: {
-    marginTop: 20,
-    width: "80%",
+    width: "100%",
+    alignItems: "center",
+    padding: 0,
+    marginTop: 0, // Ajustado para eliminar el espacio superior
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   text: {
     fontSize: 18, // Ajuste del tamaño del texto
@@ -166,5 +185,114 @@ export const globalStyles = StyleSheet.create({
     fontSize: 12, // Tamaño reducido para centrar mejor las leyendas
     textAlign: "center",
     marginTop: -5, // Reducido para disminuir la separación entre el icono y la leyenda
+  },
+  packageContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginBottom: 10,
+  },
+
+  packageButton: {
+    width: "45%", // Ajusta el ancho de los botones de paquete
+    marginBottom: 20,
+  },
+  packageButtonText: {},
+  formButton: {
+    marginBottom: 10,
+    backgroundColor: "#555555",
+    borderColor: "#ffffff",
+    borderWidth: 1,
+  },
+  limpiarButton: {
+    backgroundColor: "#666666",
+    borderColor: "#ffffff",
+    borderWidth: 1,
+    marginTop: 0, // Elimina cualquier margen superior adicional
+  },
+  modificarButton: {
+    backgroundColor: "#777777",
+    borderColor: "#ffffff",
+    borderWidth: 1,
+    marginTop: 10, // Elimina cualquier margen superior adicional
+  },
+  autocompleteContainer: {
+    width: "100%",
+    position: "relative",
+  },
+  suggestionItem: {
+    padding: 10,
+    backgroundColor: "#555555",
+    borderBottomColor: "#FFF",
+    borderBottomWidth: 1,
+  },
+  suggestionText: {
+    color: "#fff",
+  },
+  suggestionsContainer: {
+    backgroundColor: "#333333",
+    borderColor: "#fff",
+    borderWidth: 1,
+    marginTop: 5,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  leftButtonColumn: {
+    flexDirection: "column",
+    width: "45%", // Ajusta el ancho de las columnas de botones
+  },
+  rightButtonColumn: {
+    flexDirection: "column",
+    width: "45%", // Ajusta el ancho de las columnas de botones
+  },
+  appbar: {
+    backgroundColor: "#000",
+  },
+  appbarTitle: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  pickerContainer: {
+    width: "70%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignSelf: "center",
+    marginVertical: 10,
+  },
+  picker: {
+    color: "#ffffff",
+    width: "75%",
+    backgroundColor: "#888888",
+    borderColor: "#fff",
+    borderWidth: 1,
+    marginBottom: 10,
+    marginTop: -10, // Reducción del margen superior
+  },
+  pickerItem: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  customPicker: {
+    color: "#ffffff", // Texto blanco
+    backgroundColor: "#333", // Fondo negro
+    borderColor: "#ffffff", // Borde blanco
+    borderWidth: 1,
+    width: "142%",
+    left: -47,
+  },
+  packageTitle: {
+    color: "#fff",
+    marginBottom: 0, // Eliminar el margen inferior del título
+  },
+
+  packageTitle1: {
+    color: "#fff",
+    marginBottom: 10,
   },
 });
