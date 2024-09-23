@@ -1,47 +1,50 @@
-import axios from "axios";
-import CryptoJS from "crypto-js"; // Asegúrate de que esté importado
+// /src/services/ApiService.js
+
+import * as Crypto from "expo-crypto";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwsKxwJEcsgSbszhDJXkcN0hUxmPeamK9kiGB4KT61fKWpakOJRo3nhmf903RtiCZQ9aw/exec"; // Reemplaza con tu script de Google Apps
+  "https://script.google.com/macros/s/AKfycbzl_K0a0qz26hyVt989hwoTJfcBHDIQntCYHivWMFujGXDtPAj1eDJcVBLw5SOYrgyhQw/exec"; // Reemplaza con tu URL real
 
-// Función para autenticar usuarios
+// Función para hashear la contraseña
+export const hashPassword = async (password) => {
+  const digest = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    password
+  );
+  return digest;
+};
+
+// Función para iniciar sesión
 export const loginUser = async (username, password) => {
-  try {
-    // Generar el hash de la contraseña
-    const passwordHash = CryptoJS.SHA256(password).toString();
+  const passwordHash = await hashPassword(password);
 
-    const payload = {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
       action: "login",
       username,
       passwordHash,
-    };
+    }),
+  });
 
-    const response = await axios.post(API_URL, payload);
-
-    return response.data; // Debería devolver el token, username y fecha de expiración
-  } catch (error) {
-    console.error("Error en la autenticación:", error);
-    throw error;
-  }
+  const data = await response.json();
+  return data;
 };
 
-// Función para registrar usuarios
+// Función para registrar usuario
 export const registerUser = async (name, username, password) => {
-  try {
-    const passwordHash = CryptoJS.SHA256(password).toString();
+  const passwordHash = await hashPassword(password);
 
-    const payload = {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
       action: "register",
       name,
       username,
       passwordHash,
-    };
+    }),
+  });
 
-    const response = await axios.post(API_URL, payload);
-
-    return response.data;
-  } catch (error) {
-    console.error("Error en el registro:", error);
-    throw error;
-  }
+  const data = await response.json();
+  return data;
 };

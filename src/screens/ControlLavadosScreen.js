@@ -1,497 +1,289 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Alert,
-  TouchableWithoutFeedback,
   Keyboard,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Dimensions,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  BottomNavigation,
-  Appbar,
   Provider as PaperProvider,
-  TextInput,
   Button,
+  TextInput,
+  IconButton,
+  Headline,
   MD3DarkTheme as darkTheme,
 } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { Picker } from "@react-native-picker/picker";
+import * as SecureStore from "expo-secure-store";
+import { AuthContext } from "../context/AuthContext";
+import { loginUser } from "../services/ApiService";
 import { globalStyles } from "../utils/globalStyles";
-import { AuthContext } from "../context/AuthContext"; // Importar AuthContext
 
-// Obtener dimensiones de la pantalla
-const { width: screenWidth } = Dimensions.get("window");
+const HomeScreen = ({ navigation }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [checkingToken, setCheckingToken] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userConfirmed, setUserConfirmed] = useState(false);
+  const { login, logout } = useContext(AuthContext);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-// Componente para el menú personalizado (menú hamburguesa)
-const CustomMenu = ({ visible, closeMenu, handleCloseApp }) => {
-  return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      animationType="fade"
-      onRequestClose={closeMenu}
-    >
-      <TouchableWithoutFeedback onPress={closeMenu}>
-        <View style={globalStyles.menuOverlay}>
-          <View style={globalStyles.menu}>
-            <TouchableOpacity
-              onPress={handleCloseApp}
-              style={globalStyles.menuItem}
-            >
-              <Text style={globalStyles.menuText}>Cerrar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
-  );
-};
-
-// Componente para la ruta "Agregar lavado"
-const MasRoute = ({ showForm, setShowForm }) => {
-  const { username } = useContext(AuthContext); // Obtener username del contexto
-  const [lavador, setLavador] = useState(""); // Inicializar el estado de lavador
-  const [placa, setPlaca] = useState("");
-  const [modelo, setModelo] = useState("");
-  const [otroPaquete, setOtroPaquete] = useState("");
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [comenzado, setComenzado] = useState(false);
-  const [modelosGuardados, setModelosGuardados] = useState([]);
-  const [selectedValue, setSelectedValue] = useState("100$"); // Selector inicial
-  const [formDisabled, setFormDisabled] = useState(false);
-
-  // Cargar el estado guardado en AsyncStorage al montar el componente
   useEffect(() => {
-    if (username) {
-      setLavador(username); // Establecer el valor inicial de lavador con username
-    }
-    const cargarEstado = async () => {
+    const checkCurrentUser = async () => {
       try {
-        const estadoGuardado = await AsyncStorage.getItem("estadoInputs");
-        if (estadoGuardado) {
-          const {
-            lavador,
-            placa,
-            modelo,
-            otroPaquete,
-            selectedPackage,
-            selectedValue,
-            comenzado,
-          } = JSON.parse(estadoGuardado);
-          setLavador(lavador || username);
-          setPlaca(placa);
-          setModelo(modelo);
-          setOtroPaquete(otroPaquete);
-          setSelectedPackage(selectedPackage);
-          setSelectedValue(selectedValue);
-          setComenzado(comenzado);
+        const storedUsername = await SecureStore.getItemAsync("username");
+        if (storedUsername) {
+          setCurrentUser(storedUsername);
         }
       } catch (error) {
-        console.log("Error al cargar el estado guardado:", error);
+        console.log("Error al verificar el usuario actual:", error);
+      } finally {
+        setCheckingToken(false);
       }
     };
-    cargarEstado();
-  }, [username]);
+    checkCurrentUser();
 
-  // Guardar el estado en AsyncStorage al desmontar o cambiar de pantalla
-  useEffect(() => {
-    const guardarEstado = async () => {
-      try {
-        const estadoActual = {
-          lavador,
-          placa,
-          modelo,
-          otroPaquete,
-          selectedPackage,
-          selectedValue,
-          comenzado,
-        };
-        await AsyncStorage.setItem(
-          "estadoInputs",
-          JSON.stringify(estadoActual)
-        );
-      } catch (error) {
-        console.log("Error al guardar el estado:", error);
-      }
-    };
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    // Guardar estado cuando se desmonta el componente
-    return () => {
-      guardarEstado();
-    };
-  }, [
-    lavador,
-    placa,
-    modelo,
-    otroPaquete,
-    selectedPackage,
-    selectedValue,
-    comenzado,
-  ]);
+  const formattedDate = currentTime.toLocaleDateString();
+  const formattedTime = currentTime.toLocaleTimeString();
 
-  const handleComenzar = () => {
-    if (!placa || !modelo || !selectedPackage || !lavador) {
-      Alert.alert(
-        "Error",
-        "Por favor, complete los campos de Lavador, Placa, Modelo y seleccione un paquete."
-      );
+  const handleLogin = async () => {
+    const cleanedUsername = username.trim();
+    const cleanedPassword = password.trim();
+
+    if (!cleanedUsername || !cleanedPassword) {
+      Alert.alert("Error", "Por favor, ingrese su usuario y clave.");
       return;
     }
 
-    guardarModeloEnAsyncStorage(modelo);
-    setFormDisabled(true);
-    setComenzado(true);
-  };
-
-  const handleModificar = () => {
-    setFormDisabled(false);
-    setComenzado(false);
-  };
-
-  const handleTerminar = () => {
-    setFormDisabled(false);
-    setComenzado(false);
-    setShowForm(false);
-  };
-
-  const guardarModeloEnAsyncStorage = async (nuevoModelo) => {
+    setLoading(true);
     try {
-      const modelos = await AsyncStorage.getItem("modelos");
-      let modelosActualizados = modelos ? JSON.parse(modelos) : [];
-
-      if (!modelosActualizados.includes(nuevoModelo)) {
-        modelosActualizados.push(nuevoModelo);
-        await AsyncStorage.setItem(
-          "modelos",
-          JSON.stringify(modelosActualizados)
-        );
-        setModelosGuardados(modelosActualizados);
+      const response = await loginUser(cleanedUsername, cleanedPassword);
+      setLoading(false);
+      if (response.status === "success") {
+        const { token, username: user, role } = response;
+        await login(token, user, role);
+        setUserConfirmed(true);
       } else {
-        console.log("El modelo ya existe en la lista:", nuevoModelo);
+        Alert.alert("Error", response.message);
       }
     } catch (error) {
-      console.log("Error al guardar el modelo en AsyncStorage", error);
+      setLoading(false);
+      console.log("Error en el login:", error);
+      Alert.alert("Error", "Error al autenticar");
     }
   };
 
-  const handleLimpiar = () => {
-    setPlaca("");
-    setModelo("");
-    setOtroPaquete("");
+  const handleLogout = async () => {
+    await logout();
+    setCurrentUser(null);
+    setUsername("");
+    setPassword("");
+    setUserConfirmed(false);
   };
 
-  // Función que cambia el valor del selector dependiendo del paquete seleccionado
-  const getPickerValues = () => {
-    if (selectedPackage === 1) {
-      return ["90$", "100$", "110$", "130$"];
-    } else if (selectedPackage === 2) {
-      return ["100$", "110$", "120$", "150$"];
-    }
-    return [];
+  const handleConfirmContinue = () => {
+    setUserConfirmed(true);
   };
+
+  if (checkingToken) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
+
+  const dismissKeyboard = () => {
+    // Cierra el teclado si está abierto
+    Keyboard.dismiss();
+  };
+
+  if (currentUser && !userConfirmed) {
+    return (
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+          <View style={{ flex: 1 }}>
+            <PaperProvider theme={darkTheme}>
+              <View style={globalStyles.container}>
+                <View style={globalStyles.content}>
+                  <Headline style={globalStyles.titlealt}>
+                    Sesión ya iniciada
+                  </Headline>
+
+                  <Text style={globalStyles.date}>{formattedDate}</Text>
+                  <Text style={globalStyles.time}>{formattedTime}</Text>
+
+                  <Text style={globalStyles.smallText}>
+                    El usuario actual es: {currentUser}
+                  </Text>
+
+                  <View style={globalStyles.homeButtonWrapper}>
+                    <Button
+                      mode="contained"
+                      onPress={handleConfirmContinue}
+                      style={globalStyles.homeButton}
+                      labelStyle={globalStyles.homeButtonText}
+                    >
+                      Continuar como {currentUser}
+                    </Button>
+
+                    <Button
+                      mode="contained"
+                      onPress={handleLogout}
+                      style={globalStyles.homeButton}
+                      labelStyle={globalStyles.homeButtonText}
+                    >
+                      Ingresar con otro usuario
+                    </Button>
+                  </View>
+                </View>
+
+                <View style={globalStyles.footer}>
+                  <Text style={globalStyles.footerText}>Designed by:</Text>
+                  <Text style={globalStyles.footerTextBold}>
+                    CMG TECHNOLOGIES
+                  </Text>
+                  <Text style={globalStyles.footerText}>Version 1.0</Text>
+                </View>
+              </View>
+            </PaperProvider>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={globalStyles.plusContainer}>
-            {!showForm ? (
-              <Icon
-                name="plus"
-                size={100}
-                color="white"
-                onPress={() => setShowForm(true)}
-                style={globalStyles.plusIcon}
-              />
-            ) : (
-              <View style={globalStyles.formContainer}>
-                {/* TextInput para Lavador */}
-                <Text style={globalStyles.packageTitle}>Lavador</Text>
-                <TextInput
-                  mode="outlined"
-                  label="Lavador"
-                  value={lavador}
-                  onChangeText={setLavador}
-                  style={globalStyles.input1}
-                  disabled={formDisabled} // Se desactiva si ya se ha iniciado el proceso
-                  theme={{
-                    colors: {
-                      placeholder: "#888888",
-                      primary: "#ffffff",
-                      background: "#000000", // Fondo negro
-                    },
-                  }}
-                />
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
+        <View style={{ flex: 1 }}>
+          <PaperProvider theme={darkTheme}>
+            <View style={globalStyles.container}>
+              <View style={globalStyles.content}>
+                <Headline style={globalStyles.titlealt}>
+                  Control Autolavado
+                </Headline>
 
-                {/* Input de placa */}
-                <TextInput
-                  mode="outlined"
-                  label="Placa"
-                  placeholder="Ingrese la placa del vehículo"
-                  value={placa}
-                  onChangeText={setPlaca}
-                  style={globalStyles.input}
-                  disabled={formDisabled}
-                  theme={{
-                    colors: {
-                      placeholder: "#888888",
-                      primary: "#ffffff",
-                      background: "#333333",
-                    },
-                  }}
-                />
+                <Text style={globalStyles.date}>{formattedDate}</Text>
+                <Text style={globalStyles.time}>{formattedTime}</Text>
 
-                {/* Input para el modelo */}
-                <TextInput
-                  mode="outlined"
-                  label="Modelo"
-                  placeholder="Ingrese el modelo del vehículo"
-                  value={modelo}
-                  onChangeText={setModelo}
-                  style={globalStyles.inputmodelo}
-                  disabled={formDisabled}
-                  theme={{
-                    colors: {
-                      placeholder: "#888888",
-                      primary: "#ffffff",
-                      background: "#333333",
-                    },
-                  }}
-                />
-
-                {/* Selector de paquete */}
-                <Text style={globalStyles.packageTitle1}>
-                  Seleccionar Paquete
-                </Text>
-                <View style={globalStyles.packageContainer}>
-                  <Button
-                    mode={selectedPackage === 1 ? "contained" : "outlined"}
-                    onPress={() => setSelectedPackage(1)}
-                    disabled={formDisabled}
-                    style={globalStyles.packageButton}
-                    labelStyle={globalStyles.packageButtonText}
-                  >
-                    Paquete 1
-                  </Button>
-                  <Button
-                    mode={selectedPackage === 2 ? "contained" : "outlined"}
-                    onPress={() => setSelectedPackage(2)}
-                    disabled={formDisabled}
-                    style={globalStyles.packageButton}
-                    labelStyle={globalStyles.packageButtonText}
-                  >
-                    Paquete 2
-                  </Button>
+                <View style={globalStyles.homeInputContainer}>
+                  <TextInput
+                    mode="outlined"
+                    label="Usuario"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={globalStyles.homeInput}
+                    theme={{
+                      colors: {
+                        placeholder: "#ff0000",
+                        primary: "#ffffff",
+                        background: "transparent",
+                        text: "#ffffff",
+                      },
+                    }}
+                  />
+                  <IconButton
+                    icon="broom"
+                    size={20}
+                    color="#999"
+                    onPress={() => setUsername("")}
+                    style={globalStyles.homeClearButton}
+                  />
                 </View>
 
-                {/* Selector de valores (Picker) */}
-                {selectedPackage && (
-                  <Picker
-                    selectedValue={selectedValue}
-                    style={globalStyles.picker}
-                    onValueChange={(itemValue) => setSelectedValue(itemValue)}
-                    enabled={!formDisabled}
+                <View style={globalStyles.homeInputContainer}>
+                  <TextInput
+                    mode="outlined"
+                    label="Clave"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    right={
+                      <TextInput.Icon
+                        icon={showPassword ? "eye" : "eye-off"}
+                        color="#ffffff"
+                        onPress={() => setShowPassword(!showPassword)}
+                      />
+                    }
+                    style={globalStyles.homeInput}
+                    theme={{
+                      colors: {
+                        placeholder: "#ff0000",
+                        primary: "#ffffff",
+                        background: "transparent",
+                        text: "#ffffff",
+                      },
+                    }}
+                  />
+                  <IconButton
+                    icon="broom"
+                    size={20}
+                    color="#999"
+                    onPress={() => setPassword("")}
+                    style={globalStyles.homeClearButton}
+                  />
+                </View>
+
+                <View style={globalStyles.homeButtonWrapper}>
+                  {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                  ) : (
+                    <Button
+                      mode="contained"
+                      onPress={handleLogin}
+                      style={globalStyles.homeButton}
+                      labelStyle={globalStyles.homeButtonText}
+                    >
+                      Autenticar
+                    </Button>
+                  )}
+                </View>
+
+                <View style={globalStyles.homeRegisterContainer}>
+                  <Text style={globalStyles.homeSmallText}>
+                    ¿No tienes una cuenta?
+                  </Text>
+                  <Text
+                    style={globalStyles.homeRegisterText}
+                    onPress={() => navigation.navigate("Register")}
                   >
-                    {getPickerValues().map((value) => (
-                      <Picker.Item key={value} label={value} value={value} />
-                    ))}
-                  </Picker>
-                )}
-
-                {/* Input para otros detalles */}
-                <TextInput
-                  mode="outlined"
-                  label="Otro"
-                  placeholder="Ingrese detalles adicionales (opcional)"
-                  value={otroPaquete}
-                  onChangeText={setOtroPaquete}
-                  style={globalStyles.input}
-                  disabled={formDisabled}
-                  theme={{
-                    colors: {
-                      placeholder: "#888888",
-                      primary: "#ffffff",
-                      background: "#333333",
-                    },
-                  }}
-                />
-
-                {/* Botones de acción */}
-                <View style={globalStyles.buttonRow}>
-                  <View style={globalStyles.leftButtonColumn}>
-                    <Button
-                      mode="contained"
-                      style={globalStyles.formButton}
-                      icon={() => (
-                        <Icon
-                          name="play-circle"
-                          size={20}
-                          color={comenzado ? "green" : "white"}
-                        />
-                      )}
-                      labelStyle={globalStyles.buttonText}
-                      onPress={handleComenzar}
-                      disabled={comenzado}
-                    >
-                      {comenzado ? "Iniciado" : "Comenzar"}
-                    </Button>
-
-                    <Button
-                      mode="contained"
-                      style={globalStyles.formButton}
-                      icon={() => (
-                        <Icon
-                          name="check-circle"
-                          size={20}
-                          color={comenzado ? "red" : "white"}
-                        />
-                      )}
-                      labelStyle={globalStyles.buttonText}
-                      onPress={handleTerminar}
-                    >
-                      Terminar
-                    </Button>
-                  </View>
-
-                  <View style={globalStyles.rightButtonColumn}>
-                    <Button
-                      mode="contained"
-                      style={globalStyles.limpiarButton}
-                      icon={() => <Icon name="broom" size={20} color="white" />}
-                      labelStyle={globalStyles.buttonText}
-                      onPress={handleLimpiar}
-                    >
-                      Limpiar
-                    </Button>
-
-                    <Button
-                      mode="contained"
-                      style={[globalStyles.modificarButton]}
-                      icon={() => (
-                        <Icon
-                          name="pencil"
-                          size={20}
-                          color={comenzado ? "yellow" : "white"}
-                        />
-                      )}
-                      labelStyle={globalStyles.buttonText}
-                      onPress={handleModificar}
-                    >
-                      Modificar
-                    </Button>
-                  </View>
+                    Regístrate aquí
+                  </Text>
                 </View>
               </View>
-            )}
-          </View>
-        </ScrollView>
+
+              <View style={globalStyles.footer}>
+                <Text style={globalStyles.footerText}>Designed by:</Text>
+                <Text style={globalStyles.footerTextBold}>
+                  CMG TECHNOLOGIES
+                </Text>
+                <Text style={globalStyles.footerText}>Version 1.0</Text>
+              </View>
+            </View>
+          </PaperProvider>
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
 
-// Otras rutas para el menú inferior
-const PendientesRoute = () => (
-  <View style={globalStyles.centered}>
-    <Icon name="clipboard-list" size={100} color="white" />
-    <Text style={globalStyles.text}>Pendientes</Text>
-  </View>
-);
-
-const MiDiaRoute = () => (
-  <View style={globalStyles.centered}>
-    <Icon name="calendar-today" size={100} color="white" />
-    <Text style={globalStyles.text}>Mi Día</Text>
-  </View>
-);
-
-const MiSemanaRoute = () => (
-  <View style={globalStyles.centered}>
-    <Icon name="calendar-week" size={100} color="white" />
-    <Text style={globalStyles.text}>Mi Semana</Text>
-  </View>
-);
-
-// Pantalla principal de Control de Lavado
-const ControlLavadoScreen = () => {
-  const { logout, username } = useContext(AuthContext);
-  const [index, setIndex] = useState(0);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
-
-  const handleCloseApp = () => {
-    Alert.alert("Cerrando aplicación...");
-    closeMenu();
-  };
-
-  const routes = [
-    { key: "mas", title: "Agregar", focusedIcon: "plus" },
-    { key: "pendientes", title: "Pendientes", focusedIcon: "clipboard-list" },
-    { key: "midia", title: "Mi Día", focusedIcon: "calendar-today" },
-    { key: "misemana", title: "Mi Semana", focusedIcon: "calendar-week" },
-  ];
-
-  const renderScene = BottomNavigation.SceneMap({
-    mas: () => <MasRoute showForm={showForm} setShowForm={setShowForm} />,
-    pendientes: PendientesRoute,
-    midia: MiDiaRoute,
-    misemana: MiSemanaRoute,
-  });
-
-  return (
-    <PaperProvider theme={darkTheme}>
-      <Appbar.Header style={globalStyles.appbar}>
-        <Appbar.Content
-          title={`Control Lavado - ${username}`}
-          titleStyle={[globalStyles.title, { textAlign: "left", fontSize: 16 }]}
-        />
-        <Appbar.Action icon="menu" color="white" onPress={openMenu} />
-      </Appbar.Header>
-
-      <CustomMenu
-        visible={menuVisible}
-        closeMenu={closeMenu}
-        handleCloseApp={handleCloseApp}
-      />
-
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        renderScene={renderScene}
-        barStyle={globalStyles.bottomNav}
-        renderLabel={({ route, focused }) => (
-          <Text
-            style={[
-              globalStyles.label,
-              { color: focused ? "#FFFFFF" : "#888888" },
-            ]}
-          >
-            {route.title}
-          </Text>
-        )}
-        renderIcon={({ route, focused }) => (
-          <Icon
-            name={route.focusedIcon}
-            color={focused ? "#fff" : "#888888"}
-            size={24}
-          />
-        )}
-      />
-    </PaperProvider>
-  );
-};
-
-export default ControlLavadoScreen;
+export default HomeScreen;

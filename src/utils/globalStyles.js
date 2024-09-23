@@ -1,3 +1,5 @@
+// globalStyles.js
+
 import { StyleSheet, Dimensions } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -5,13 +7,13 @@ const { width: screenWidth } = Dimensions.get("window");
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start", // Para que el contenido se alinee en la parte superior
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "#222",
     padding: 20,
   },
   content: {
-    width: "100%", // Asegurando que el contenido ocupe el ancho completo
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -21,6 +23,15 @@ export const globalStyles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
     color: "#fff",
+    marginTop: 20,
+  },
+  titlealt: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#fff",
+    marginTop: 80,
   },
   date: {
     fontSize: 18,
@@ -30,38 +41,38 @@ export const globalStyles = StyleSheet.create({
   },
   time: {
     fontSize: 18,
-    marginBottom: 20,
+    marginBottom: 90,
     textAlign: "center",
     color: "#fff",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "90%",
+    width: "70%",
     marginBottom: 20,
     backgroundColor: "#333",
     borderRadius: 5,
   },
   input: {
-    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
+    width: "100%",
     backgroundColor: "transparent",
     color: "#fff",
     paddingHorizontal: 10,
-    marginBottom: 10, // Espacio entre los inputs
+    marginBottom: 10,
   },
   input1: {
-    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
+    width: "100%",
     backgroundColor: "transparent",
     color: "#fff",
     paddingHorizontal: 10,
-    marginBottom: 10, // Espacio entre los inputs
+    marginBottom: 50,
   },
   inputmodelo: {
-    width: "100%", // Asegura que los inputs ocupen todo el ancho disponible
+    width: "100%",
     backgroundColor: "transparent",
     color: "#fff",
     paddingHorizontal: 10,
-    marginBottom: 15, // Espacio entre los inputs
+    marginBottom: 15,
   },
   clearButton: {
     padding: 10,
@@ -99,8 +110,9 @@ export const globalStyles = StyleSheet.create({
     marginLeft: 5,
   },
   footer: {
-    alignItems: "center", // Centrar el texto en el footer
-    paddingVertical: 10, // Espacio extra en el footer
+    alignItems: "center",
+    paddingVertical: 10,
+    marginTop: 30,
   },
   footerText: {
     color: "#888",
@@ -114,11 +126,11 @@ export const globalStyles = StyleSheet.create({
   backButtonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40, // Mueve el botón hacia abajo
+    marginTop: 40,
   },
   backButton: {
-    backgroundColor: "#444", // Fondo oscuro para el botón redondo
-    borderRadius: 50, // Hace el botón redondo
+    backgroundColor: "#444",
+    borderRadius: 50,
     marginBottom: 5,
   },
   backButtonText: {
@@ -145,12 +157,12 @@ export const globalStyles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     padding: 0,
-    marginTop: 0, // Ajustado para eliminar el espacio superior
+    marginTop: 0,
     paddingLeft: 20,
     paddingRight: 20,
   },
   text: {
-    fontSize: 18, // Ajuste del tamaño del texto
+    fontSize: 18,
     color: "white",
     marginTop: 10,
     textAlign: "center",
@@ -182,9 +194,9 @@ export const globalStyles = StyleSheet.create({
     color: "#333",
   },
   label: {
-    fontSize: 12, // Tamaño reducido para centrar mejor las leyendas
+    fontSize: 12,
     textAlign: "center",
-    marginTop: -5, // Reducido para disminuir la separación entre el icono y la leyenda
+    marginTop: -5,
   },
   packageContainer: {
     flexDirection: "row",
@@ -192,9 +204,8 @@ export const globalStyles = StyleSheet.create({
     width: "80%",
     marginBottom: 10,
   },
-
   packageButton: {
-    width: "45%", // Ajusta el ancho de los botones de paquete
+    width: "45%",
     marginBottom: 20,
   },
   packageButtonText: {},
@@ -208,13 +219,13 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: "#666666",
     borderColor: "#ffffff",
     borderWidth: 1,
-    marginTop: 0, // Elimina cualquier margen superior adicional
+    marginTop: 0,
   },
   modificarButton: {
     backgroundColor: "#777777",
     borderColor: "#ffffff",
     borderWidth: 1,
-    marginTop: 10, // Elimina cualquier margen superior adicional
+    marginTop: 10,
   },
   autocompleteContainer: {
     width: "100%",
@@ -243,11 +254,11 @@ export const globalStyles = StyleSheet.create({
   },
   leftButtonColumn: {
     flexDirection: "column",
-    width: "45%", // Ajusta el ancho de las columnas de botones
+    width: "45%",
   },
   rightButtonColumn: {
     flexDirection: "column",
-    width: "45%", // Ajusta el ancho de las columnas de botones
+    width: "45%",
   },
   appbar: {
     backgroundColor: "#000",
@@ -271,7 +282,7 @@ export const globalStyles = StyleSheet.create({
     borderColor: "#fff",
     borderWidth: 1,
     marginBottom: 10,
-    marginTop: -10, // Reducción del margen superior
+    marginTop: -10,
   },
   pickerItem: {
     color: "#ffffff",
@@ -279,20 +290,204 @@ export const globalStyles = StyleSheet.create({
     textAlign: "center",
   },
   customPicker: {
-    color: "#ffffff", // Texto blanco
-    backgroundColor: "#333", // Fondo negro
-    borderColor: "#ffffff", // Borde blanco
+    color: "#ffffff",
+    backgroundColor: "#333",
+    borderColor: "#ffffff",
     borderWidth: 1,
     width: "142%",
     left: -47,
   },
   packageTitle: {
     color: "#fff",
-    marginBottom: 0, // Eliminar el margen inferior del título
+    marginBottom: 0,
   },
-
   packageTitle1: {
     color: "#fff",
     marginBottom: 10,
   },
+  bottomNav: {
+    backgroundColor: "#000",
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  pendienteItem: {
+    backgroundColor: "#2a2a2a",
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 5,
+    width: "90%",
+    alignSelf: "center",
+  },
+  legendText: {
+    color: "#ff0000",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  confirmButton: {
+    backgroundColor: "#4CAF50",
+    marginTop: 10,
+  },
+  pendientesContainer: {
+    paddingVertical: 20,
+    backgroundColor: "#1a1a1a",
+  },
+
+  picker: {
+    color: "#ffffff",
+    width: "75%",
+    backgroundColor: "#888888",
+    borderColor: "#fff",
+    borderWidth: 1,
+    marginBottom: 10,
+    marginTop: -10,
+  },
+  disabledPicker: {
+    backgroundColor: "#555555",
+    opacity: 0.5,
+  },
+
+  // Estilos exclusivos para RegisterScreen
+  registerContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "#222",
+    padding: 20,
+  },
+  registerTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#fff",
+    marginTop: 60,
+  },
+  registerInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "105%",
+    marginBottom: 20,
+    backgroundColor: "#333",
+    borderRadius: 5,
+  },
+  registerInput: {
+    width: "80%",
+    backgroundColor: "transparent",
+    color: "#fff",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  registerClearButton: {
+    padding: 10,
+    backgroundColor: "#444",
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  registerButtonWrapper: {
+    width: "90%",
+    marginVertical: 5,
+  },
+  registerButton: {
+    backgroundColor: "#555",
+    borderColor: "#ffffff",
+    borderWidth: 1,
+  },
+  registerButtonText: {
+    color: "#fff",
+  },
+  registerBackButtonContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+  },
+  registerBackButton: {
+    backgroundColor: "#444",
+    borderRadius: 50,
+    marginBottom: 5,
+  },
+  registerBackButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  registerSmallText: {
+    color: "#fff",
+    fontSize: 14,
+  },
+  registerText: {
+    color: "#ff0000",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 5,
+  },
+  registerFooter: {
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  registerFooterText: {
+    color: "#888",
+    fontSize: 14,
+  },
+  registerFooterTextBold: {
+    color: "#ff0000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  // Estilos exclusivos para HomeScreen
+  homeInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "90%",
+    marginBottom: 20,
+    backgroundColor: "#333",
+    borderRadius: 5,
+  },
+  homeInput: {
+    width: "83%",
+    backgroundColor: "transparent",
+    color: "#fff",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  homeClearButton: {
+    padding: 10,
+    backgroundColor: "#444",
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  homeButtonWrapper: {
+    width: "90%",
+    marginVertical: 5,
+  },
+  homeButton: {
+    backgroundColor: "#555",
+    borderColor: "#ffffff",
+    borderWidth: 1,
+  },
+  homeButtonText: {
+    color: "#fff",
+  },
+  homeRegisterContainer: {
+    marginTop: 20,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 60,
+  },
+  homeSmallText: {
+    color: "#fff",
+    fontSize: 14,
+  },
+  homeRegisterText: {
+    color: "#ff0000",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 5,
+  },
 });
+
+export default globalStyles;
